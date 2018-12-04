@@ -13,6 +13,8 @@ export default {
       pagesize: 2,
       // 搜索内容
       search: '',
+      // 展示第几页数据
+      pagenum: 1,
       // 添加数据
       dialogFormVisible: false,
       addUserForm: {
@@ -132,7 +134,7 @@ export default {
             message: meta.msg,
             duration: 600
           })
-          // 重新刷新
+          // 重新刷新页面
           this.getUsersList(1, this.search)
           // 关闭添加用户对话框
           this.dialogFormVisible = false
@@ -150,6 +152,35 @@ export default {
     clearAddUserMsg () {
       // 重置表单
       this.$refs.addUserFormMsg.resetFields()
+    },
+
+    // 删除用户数据
+    async delUser (id) {
+      try {
+        await this.$confirm('您确定删除该用户吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        // 发送请求,删除
+        const res = await this.$axios.delete(`users/${id}`)
+        const { meta } = res.data
+        if (meta.status === 200) {
+          this.$message({
+            type: 'success',
+            message: meta.msg,
+            duration: 800
+          })
+          // 重新刷新页面
+          this.getUsersList(1, this.search)
+        }
+      } catch (e) {
+        this.$message({
+          type: 'info',
+          message: '取消删除',
+          duration: 800
+        })
+      }
     }
   },
 

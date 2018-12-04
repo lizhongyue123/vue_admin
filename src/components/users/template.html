@@ -39,7 +39,7 @@
         <!-- 修改 -->
         <el-button type="primary" plain size="mini" icon="el-icon-edit"></el-button>
         <!-- 删除 -->
-        <el-button type="danger" plain size="mini" icon="el-icon-delete"></el-button>
+        <el-button type="danger" plain size="mini" icon="el-icon-delete" @click="delUser(scope.row.id)"></el-button>
         <!-- 分配角色 -->
         <el-button type="success" plain size="mini" icon="el-icon-check">分配角色</el-button>
 
@@ -47,7 +47,8 @@
     </el-table-column>
   </el-table>
   <!-- 分页 -->
-  <el-pagination background layout="prev, pager, next" :total="total" :page-size="pagesize" @current-change="currentChange">
+  <el-pagination background layout="prev, pager, next" :total="total" :page-size="pagesize" @current-change="currentChange"
+    :current-page="pagenum">
   </el-pagination>
 
   <!-- 添加用户数据 -->
