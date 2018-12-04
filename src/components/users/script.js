@@ -23,25 +23,31 @@ export default {
       },
       addUserFormRules: {
         username: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '用户名长度为3到12个字符',
+            trigger: 'blur'
+          }
         ],
         password: [
-          { required: true, message: '请选择活动区域', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '密码为必填项', trigger: 'blur' },
+          { min: 6, max: 12, message: '密码长度为6到12个字符', trigger: 'blur' }
         ],
         email: [
           {
-            type: 'date',
-            message: '请选择日期',
-            trigger: 'change'
+            // pattern 表示使用正则表达式对数据进行校验
+            pattern: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+            message: '邮箱格式不正确',
+            trigger: 'blur'
           }
         ],
         mobile: [
           {
-            type: 'date',
-            message: '请选择时间',
-            trigger: 'change'
+            pattern: /^1(3|4|5|7|8)\d{9}$/,
+            message: '手机号码格式不正确',
+            trigger: 'blur'
           }
         ]
       }
@@ -109,9 +115,41 @@ export default {
       }
     },
 
-    // 显示添加用户文本框
+    // 显示添加用户对话框
     isShowAddUserDialog () {
       this.dialogFormVisible = true
+    },
+
+    // 添加用户
+    async addUser () {
+      try {
+        const res = await this.$axios.post('users', this.addUserForm)
+        const { meta } = res.data
+        if (meta.status === 201) {
+          // 添加成功
+          this.$message({
+            type: 'success',
+            message: meta.msg,
+            duration: 600
+          })
+          // 重新刷新
+          this.getUsersList(1, this.search)
+          // 关闭添加用户对话框
+          this.dialogFormVisible = false
+        } else {
+          this.$message({
+            type: 'error',
+            message: meta.msg,
+            duration: 800
+          })
+        }
+      } catch (e) {}
+    },
+
+    // 清空对话框的数据
+    clearAddUserMsg () {
+      // 重置表单
+      this.$refs.addUserFormMsg.resetFields()
     }
   },
 
