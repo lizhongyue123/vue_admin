@@ -31,7 +31,17 @@ export default {
   async created () {
     const res = await this.$axios.get(`rights/list`)
     // console.log(res)
-    this.rightsList = res.data.data
+    const { meta } = res.data
+    if (meta.status === 200) {
+      // 赋值
+      this.rightsList = res.data.data
+    } else {
+      this.$message({
+        type: 'error',
+        message: meta.msg,
+        duration: 800
+      })
+    }
   },
   data () {
     return {
