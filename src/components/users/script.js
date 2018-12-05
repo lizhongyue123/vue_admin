@@ -52,6 +52,33 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+
+      // 编辑数据
+      editDialogFormVisible: false,
+      editUserForm: {
+        username: '',
+        email: '',
+        mobile: '',
+        // 用户id
+        id: -1
+      },
+      editUserFormRules: {
+        email: [
+          {
+            // pattern 表示使用正则表达式对数据进行校验
+            pattern: /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+            message: '邮箱格式不正确',
+            trigger: 'blur'
+          }
+        ],
+        mobile: [
+          {
+            pattern: /^1(3|4|5|7|8)\d{9}$/,
+            message: '手机号码格式不正确',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
@@ -181,6 +208,47 @@ export default {
           duration: 800
         })
       }
+    },
+
+    // 显示编辑对话框和填充数据
+    isShowEditUserDialog (user) {
+      // 显示编辑对话框
+      this.editDialogFormVisible = true
+      // 填充数据
+      this.editUserForm.username = user.username
+      this.editUserForm.email = user.email
+      this.editUserForm.mobile = user.mobile
+      this.editUserForm.id = user.id
+    },
+
+    // 编辑用户数据
+    async editUser () {
+      try {
+        const res = await this.$axios.put(`users/${this.editUserForm.id}`, {
+          email: this.editUserForm.email,
+          mobile: this.editUserForm.mobile
+        })
+        const { meta } = res.data
+        // 编辑成功
+        if (meta.status === 200) {
+          this.$message({
+            type: 'success',
+            message: meta.msg,
+            duration: 600
+          })
+          // 关闭编辑对话框
+          this.editDialogFormVisible = false
+          // 重新刷新页面
+          this.getUsersList(1, this.search)
+        } else {
+          // 编辑失败
+          this.$message({
+            type: 'error',
+            message: meta.msg,
+            duration: 600
+          })
+        }
+      } catch (e) {}
     }
   },
 
