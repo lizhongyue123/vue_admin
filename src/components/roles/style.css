@@ -1,0 +1,18 @@
+.rights {
+  font-size: 16px;
+  height: 40px;
+  line-height: 40px;
+  background-color: #d4dae0;
+  padding-left: 10px;
+}
+
+.level1 {
+  margin-top: 10px;
+  border-bottom: 1px dashed #ccc;
+}
+.level2 {
+  margin-bottom: 5px;
+}
+.level3 {
+  margin: 0 5px 10px 0;
+}

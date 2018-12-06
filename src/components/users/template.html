@@ -96,7 +96,25 @@
       <el-form-item label="手机" prop="mobile">
         <el-input v-model="editUserForm.mobile"></el-input>
       </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="editDialogFormVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editUser">确 定</el-button>
+    </div>
+  </el-dialog>
 
+  <!-- 分配角色 -->
+  <el-dialog title="分配角色" :visible.sync="editDialogFormVisible">
+    <el-form :model="editUserForm" label-width="80px" :rules="editUserFormRules">
+      <el-form-item label="用户名" prop="username">
+        <el-tag type="info">{{editUserForm.username}}</el-tag>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="editUserForm.email"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="mobile">
+        <el-input v-model="editUserForm.mobile"></el-input>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="editDialogFormVisible = false">取 消</el-button>
