@@ -33,6 +33,26 @@ axios.interceptors.request.use(
   }
 )
 
+axios.interceptors.response.use(
+  // 所有请求完成后都要执行的操作
+  function (response) {
+    if (response.data.meta.status === 403) {
+      vm.$message({
+        type: 'error',
+        message: '您没有权限访问这个接口'
+      })
+      vm.$router.push('/login')
+      localStorage.removeItem('token')
+    }
+
+    return response
+  },
+  function (error) {
+    // 错误处理
+    return Promise.reject(error)
+  }
+)
+
 // 注册插件
 Vue.use(ElementUI)
 
@@ -40,7 +60,7 @@ Vue.config.productionTip = false
 
 // 作用: 告诉ESlint不要校验下一行代码的no-new规则,注释不能去掉
 /* eslint-disable no-new */
-new Vue({
+const vm = new Vue({
   el: '#app',
   components: { App },
   template: '<App/>',

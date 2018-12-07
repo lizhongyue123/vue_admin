@@ -1,6 +1,9 @@
 export default {
   created () {
+    // 渲染列表
     this.getUsersList()
+    // 分配角色
+    this.getSelectRolesList()
   },
 
   data () {
@@ -79,7 +82,43 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+
+      // 分配角色对话框的显示与隐藏
+      isShowAssignUserDialog: false,
+      assignUserForm: {
+        // 当前用户的名称
+        username: '',
+        // 当前用户的角色id
+        // 默认是空值,此时select中就会展示: 请选择
+        rid: '',
+        // 用户id
+        id: -1
+      },
+      // 下拉框中的角色列表
+      selectRolesList: []
+      // options: [
+      //   {
+      //     value: '选项1',
+      //     label: '黄金糕'
+      //   },
+      //   {
+      //     value: '选项2',
+      //     label: '双皮奶'
+      //   },
+      //   {
+      //     value: '选项3',
+      //     label: '蚵仔煎'
+      //   },
+      //   {
+      //     value: '选项4',
+      //     label: '龙须面'
+      //   },
+      //   {
+      //     value: '选项5',
+      //     label: '北京烤鸭'
+      //   }
+      // ],
     }
   },
   methods: {
@@ -249,6 +288,81 @@ export default {
           })
         }
       } catch (e) {}
+    },
+
+    // 是否展示分配角色的显示与隐藏
+    async showUserDialog (assignUser) {
+      // 展示分配角色的对话框
+      this.isShowAssignUserDialog = true
+      // console.log(assignUser)
+      // 填充分配角色的用户名
+      this.assignUserForm.username = assignUser.username
+      const res = await this.$axios.get(`users/${assignUser.id}`)
+      if (res.data.meta.status === 200) {
+        let { rid } = res.data.data
+        // 如果 rid 是-1，就表示还没有给当前用户分配角色
+        // 所以，让 rid 等于 ''，表示没有角色
+        rid = rid === -1 ? '' : rid
+        // 填充分配角色的角色id
+        this.assignUserForm.rid = rid
+
+        // 分配用户角色时需要用户id
+        this.assignUserForm.id = assignUser.id
+      } else {
+        // 失败
+        this.$message({
+          type: 'error',
+          message: res.data.meta.msg,
+          duration: 600
+        })
+      }
+    },
+
+    // 获取下拉框渲染的角色数据列表
+    async getSelectRolesList () {
+      const res = await this.$axios.get('roles')
+      const { meta, data } = res.data
+      if (meta.status === 200) {
+        // 成功后填充数据
+        this.selectRolesList = data
+      } else {
+        // 失败
+        this.$message({
+          type: 'error',
+          message: meta.msg,
+          duration: 800
+        })
+      }
+    },
+
+    // 分配用户角色
+    async assignUserRoles () {
+      const res = await this.$axios.put(
+        `users/${this.assignUserForm.id}/role`,
+        {
+          rid: this.assignUserForm.rid
+        }
+      )
+      const { meta } = res.data
+      if (meta.status === 200) {
+        // 成功
+        this.$message({
+          type: 'success',
+          message: meta.msg,
+          duration: 600
+        })
+        // 关闭分配角色的对话框
+        this.isShowAssignUserDialog = false
+        // 重新刷新页面
+        this.getUsersList(1, this.search)
+      } else {
+        // 失败
+        this.$message({
+          type: 'error',
+          message: meta.msg,
+          duration: 800
+        })
+      }
     }
   },
 

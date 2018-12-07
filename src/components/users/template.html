@@ -41,7 +41,7 @@
         <!-- 删除 -->
         <el-button type="danger" plain size="mini" icon="el-icon-delete" @click="delUser(scope.row.id)"></el-button>
         <!-- 分配角色 -->
-        <el-button type="success" plain size="mini" icon="el-icon-check">分配角色</el-button>
+        <el-button type="success" plain size="mini" icon="el-icon-check" @click="showUserDialog(scope.row)">分配角色</el-button>
 
       </template>
     </el-table-column>
@@ -76,7 +76,6 @@
       <el-form-item label="手机" prop="mobile">
         <el-input v-model="addUserForm.mobile"></el-input>
       </el-form-item>
-
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -104,21 +103,30 @@
   </el-dialog>
 
   <!-- 分配角色 -->
-  <el-dialog title="分配角色" :visible.sync="editDialogFormVisible">
-    <el-form :model="editUserForm" label-width="80px" :rules="editUserFormRules">
-      <el-form-item label="用户名" prop="username">
-        <el-tag type="info">{{editUserForm.username}}</el-tag>
+  <el-dialog title="分配角色" :visible.sync="isShowAssignUserDialog">
+    <el-form :model="assignUserForm" label-width="80px" :rules="editUserFormRules">
+      <el-form-item label="用户名">
+        <el-tag type="info">{{assignUserForm.username}}</el-tag>
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="editUserForm.email"></el-input>
-      </el-form-item>
-      <el-form-item label="手机" prop="mobile">
-        <el-input v-model="editUserForm.mobile"></el-input>
+      <el-form-item label="角色列表">
+        <!--
+          el-select 下拉框组件
+            v-model="value" 表示选中项的value
+         -->
+        <el-select v-model="assignUserForm.rid" placeholder="请选择角色">
+          <!--
+            el-option 下拉框的每一项
+              :label="item.label" 下拉框选项的名称（负责展示给用户看的）
+              :value="item.value" 下拉框选项的值（ 给程序用的，要发送给服务器的数据 ）
+           -->
+          <el-option v-for="item in selectRolesList" :key="item.id" :label="item.roleName" :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="editDialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editUser">确 定</el-button>
+      <el-button @click="isShowAssignUserDialog = false">取 消</el-button>
+      <el-button type="primary" @click="assignUserRoles">确 定</el-button>
     </div>
   </el-dialog>
 </div>
